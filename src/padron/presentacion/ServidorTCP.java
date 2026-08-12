@@ -9,18 +9,41 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 import padron.servicio.ResultadoConsulta;
 import padron.servicio.ServicioPadron;
 import padron.util.JsonUtil;
 /** Atiende GET|cedula. No conoce ni accede a los archivos de datos. */
 public final class ServidorTCP implements Runnable, AutoCloseable {
-    private final int puerto; private final ServicioPadron servicio; private final ExecutorService trabajadores; private volatile boolean activo = true; private ServerSocket socketServidor;
-    public ServidorTCP(int puerto, ServicioPadron servicio, ExecutorService trabajadores) { this.puerto = puerto; this.servicio = servicio; this.trabajadores = trabajadores; }
+    private final ServicioPadron servicio;
+    private final ExecutorService trabajadores;
+    private final ServerSocket socketServidor;
+    private volatile boolean activo = true;
+
+    public ServidorTCP(int puerto, ServicioPadron servicio, ExecutorService trabajadores) throws IOException {
+        this.servicio = servicio;
+        this.trabajadores = trabajadores;
+        socketServidor = new ServerSocket(puerto);
+    }
+
     @Override public void run() {
-        try (ServerSocket servidor = new ServerSocket(puerto)) {
-            socketServidor = servidor;
-            while (activo) try { Socket cliente = servidor.accept(); trabajadores.submit(() -> atender(cliente)); } catch (IOException e) { if (activo) System.err.println("Error aceptando TCP: " + e.getMessage()); }
-        } catch (IOException e) { throw new IllegalStateException("No se pudo iniciar TCP en puerto " + puerto, e); }
+        try (socketServidor) {
+            while (activo) {
+                try {
+                    Socket cliente = socketServidor.accept();
+                    try {
+                        trabajadores.submit(() -> atender(cliente));
+                    } catch (RejectedExecutionException e) {
+                        cliente.close();
+                        if (activo) System.err.println("No se pudo asignar cliente TCP: " + e.getMessage());
+                    }
+                } catch (IOException e) {
+                    if (activo) System.err.println("Error aceptando TCP: " + e.getMessage());
+                }
+            }
+        } catch (IOException e) {
+            if (activo) System.err.println("Error cerrando servidor TCP: " + e.getMessage());
+        }
     }
     private void atender(Socket cliente) {
         try (cliente; BufferedReader in = new BufferedReader(new InputStreamReader(cliente.getInputStream(), StandardCharsets.UTF_8)); PrintWriter out = new PrintWriter(new OutputStreamWriter(cliente.getOutputStream(), StandardCharsets.UTF_8), true)) {
@@ -42,5 +65,5 @@ public final class ServidorTCP implements Runnable, AutoCloseable {
         if (!"GET".equals(partes[0])) return servicio.error(400, "Comando TCP desconocido. Use GET.");
         return servicio.consultar(partes[1].trim());
     }
-    @Override public void close() throws IOException { activo = false; if (socketServidor != null) socketServidor.close(); }
+    @Override public void close() throws IOException { activo = false; socketServidor.close(); }
 }

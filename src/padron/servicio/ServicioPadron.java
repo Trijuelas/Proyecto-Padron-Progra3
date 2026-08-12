@@ -14,7 +14,13 @@ public final class ServicioPadron {
             Persona persona = padron.buscarPorCedula(cedula).orElse(null);
             if (persona == null) return error(404, "No se encontro una persona con la cedula indicada.");
             return distritos.buscarPorCodigo(persona.codigoElectoral()).<ResultadoConsulta>map(d -> new ResultadoConsulta(200, PersonaDTO.de(persona, d))).orElseGet(() -> error(404, "No se encontro la division territorial asociada a la persona."));
-        } catch (IOException e) { return error(500, "No fue posible leer los archivos del padron."); }
+        } catch (IOException e) {
+            System.err.println("Error leyendo archivos del padron: " + e.getMessage());
+            return error(500, "No fue posible leer los archivos del padron.");
+        } catch (RuntimeException e) {
+            System.err.println("Error inesperado consultando el padron: " + e.getMessage());
+            return error(500, "Error inesperado al procesar la consulta.");
+        }
     }
     public ResultadoConsulta error(int codigo, String mensaje) { return new ResultadoConsulta(codigo, new ErrorDTO(true, codigo, mensaje)); }
 }
