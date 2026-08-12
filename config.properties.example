@@ -1,0 +1,6 @@
+# Copie este archivo como config.properties (no se versiona) y ajuste las rutas.
+tcp.port=5000
+http.port=8080
+padron.path=C:/ruta/a/PADRON_COMPLETO.txt
+distritos.path=C:/ruta/a/distelec.txt
+worker.threads=12

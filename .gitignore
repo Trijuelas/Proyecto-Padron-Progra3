@@ -1,0 +1,8 @@
+/build/
+/dist/
+/nbproject/private/
+config.properties
+*.class
+*.jar
+*.log
+data/
