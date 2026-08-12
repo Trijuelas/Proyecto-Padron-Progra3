@@ -6,3 +6,8 @@ config.properties
 *.jar
 *.log
 data/
+
+# Datos locales del padron
+PADRON_COMPLETO.txt
+distelec.txt
+config.properties
