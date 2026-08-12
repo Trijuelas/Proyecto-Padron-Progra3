@@ -107,7 +107,7 @@ La forma de todo error es JSON:
 | Persona o ruta inexistente | 404 |
 | Método HTTP distinto de GET | 405 (`Allow: GET`) |
 | Tiempo de espera TCP | 408 |
-| Archivo inexistente o error de lectura | 500 |
+| Archivo inexistente, error de lectura o error inesperado | 500 |
 
 Las líneas incompletas de los datos se ignoran para preservar la disponibilidad. Los errores de una solicitud se encapsulan en una respuesta y no detienen los servidores.
 
@@ -125,7 +125,7 @@ java -cp build/classes padron.PruebaServicioPadron
 java -cp build/classes padron.PruebasIntegracionServidor
 ```
 
-`PruebaServicioPadron` verifica consulta correcta, relación territorial, inexistente, cédula inválida, líneas inválidas y archivo inexistente. `PruebasIntegracionServidor` inicia ambos servidores con archivos temporales y comprueba TCP válido/inválido, continuidad después de errores, HTTP válido, 404, 405, `Content-Type`, ruta mal formada y doce clientes concurrentes (TCP y HTTP).
+`PruebaServicioPadron` verifica consulta correcta, relación territorial, inexistente, cédula inválida, líneas inválidas, archivo inexistente y escapado de caracteres especiales en JSON. `PruebasIntegracionServidor` inicia ambos servidores con archivos temporales y comprueba TCP válido/inválido, continuidad después de errores, HTTP válido, 404, 405, `Content-Type`, ruta mal formada, enlace TCP rechazado cuando el puerto está ocupado y doce clientes concurrentes (TCP y HTTP).
 
 ## Datos y privacidad
 

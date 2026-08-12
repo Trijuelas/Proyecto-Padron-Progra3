@@ -23,3 +23,7 @@ Se descartaron sugerencias de usar base de datos, XML, frameworks web, dependenc
 - Se implementó serialización JSON limitada a los DTO concretos del proyecto y escapado de caracteres de control.
 - Se añadieron límites de lectura TCP y pruebas reales de TCP, HTTP y múltiples clientes simultáneos.
 - La propuesta fue revisada para conservar nombres claros, Java estándar y responsabilidades separadas.
+
+## Auditoría posterior
+
+En una revisión posterior se solicitó auditar la implementación real de la Etapa 1, ejecutar las pruebas de TCP, HTTP y concurrencia, revisar la seguridad de la serialización JSON y corregir cualquier incumplimiento antes de integrar la rama. A partir de esa solicitud se sustituyeron las concatenaciones extensas del serializador por métodos estructurados, se validó el enlace del puerto TCP antes de anunciar el inicio y se ampliaron las pruebas de JSON y de puerto ocupado. No se utilizaron frameworks ni se desarrolló funcionalidad de la Etapa 2.
