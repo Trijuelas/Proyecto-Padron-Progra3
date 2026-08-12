@@ -1,6 +1,7 @@
 package padron;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -35,6 +36,7 @@ public final class PruebasIntegracionServidor {
         Files.writeString(archivoDistritos, "101001,SAN JOSE,CENTRAL,CARMEN\n");
         ServicioPadron servicio = new ServicioPadron(new RepositorioPadron(archivoPadron),
                 new RepositorioDistritos(archivoDistritos));
+        probarPuertoTcpOcupado(servicio);
         int puertoTcp = puertoDisponible();
         int puertoHttp = puertoDisponible();
         ExecutorService trabajadores = Executors.newFixedThreadPool(6);
@@ -64,6 +66,20 @@ public final class PruebasIntegracionServidor {
         verificar(tcp(puerto, "GET").contains("\"codigo\":400"), "TCP solicitud incompleta");
         verificar(tcp(puerto, "GET|abc").contains("\"codigo\":400"), "TCP cedula invalida");
         verificar(tcp(puerto, "GET|115550555").contains("\"cedula\":\"115550555\""), "TCP continua tras errores");
+    }
+
+    private static void probarPuertoTcpOcupado(ServicioPadron servicio) throws Exception {
+        ExecutorService trabajadores = Executors.newSingleThreadExecutor();
+        try (ServerSocket ocupado = new ServerSocket(0)) {
+            try {
+                new ServidorTCP(ocupado.getLocalPort(), servicio, trabajadores);
+                throw new AssertionError("Fallo: TCP debe detectar un puerto ocupado al iniciar");
+            } catch (IOException esperado) {
+                // El enlace se valida antes de anunciar que el servidor está listo.
+            }
+        } finally {
+            trabajadores.shutdownNow();
+        }
     }
 
     private static void probarHttp(int puerto) throws Exception {

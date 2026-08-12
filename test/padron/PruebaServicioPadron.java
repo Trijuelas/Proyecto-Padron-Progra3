@@ -1,9 +1,11 @@
 package padron;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import padron.dto.PersonaDTO;
 import padron.repositorio.RepositorioDistritos;
 import padron.repositorio.RepositorioPadron;
 import padron.servicio.ServicioPadron;
+import padron.util.JsonUtil;
 /** Prueba ejecutable sin librerias externas: datos, inexistente y validacion. */
 public final class PruebaServicioPadron {
     public static void main(String[] args) throws Exception {
@@ -15,9 +17,13 @@ public final class PruebaServicioPadron {
         verificar(s.consultar("115550555").codigo() == 200, "Consulta existente");
         verificar(s.consultar("000000000").codigo() == 404, "Consulta inexistente");
         verificar(s.consultar("abc").codigo() == 400, "Cedula invalida");
-        verificar(s.consultar("115550555").cuerpo().toString().contains("JUAN"), "Campos del padron");
+        PersonaDTO persona = (PersonaDTO) s.consultar("115550555").cuerpo();
+        verificar("JUAN".equals(persona.nombre()) && "PEREZ".equals(persona.primerApellido())
+                && "RODRIGUEZ".equals(persona.segundoApellido()), "Campos del padron");
         ServicioPadron archivoInexistente = new ServicioPadron(new RepositorioPadron(dir.resolve("no-existe.txt")), new RepositorioDistritos(distritos));
         verificar(archivoInexistente.consultar("115550555").codigo() == 500, "Archivo inexistente");
+        String jsonEspecial = JsonUtil.serializar(new PersonaDTO("115550555", "A\"B\\C\nD\tE", "PEREZ", "RODRIGUEZ", "101001", "SAN JOSE", "CENTRAL", "CARMEN"));
+        verificar(jsonEspecial.contains("A\\\"B\\\\C\\nD\\tE"), "Escapado JSON de caracteres especiales");
         System.out.println("Pruebas de ServicioPadron aprobadas.");
     }
     private static void verificar(boolean condicion, String caso) { if (!condicion) throw new AssertionError("Fallo: " + caso); }
