@@ -1,5 +1,21 @@
 # Historial de cambios
 
+## Historial de consultas en el cliente (Etapa 2)
+
+- Se agregó un botón "Historial" que abre un diálogo con las consultas realizadas durante la sesión actual (hora, cédula, protocolo, éxito/error y un resumen del resultado), sin persistir nada en disco: se pierde al cerrar la aplicación.
+- Nuevas clases `cliente.servicio.HistorialConsultas` (guarda hasta 50 entradas en memoria) y `cliente.servicio.EntradaHistorial`; nueva ventana `cliente.presentacion.VentanaHistorial`, con el mismo sistema de diseño ya usado en el resto del cliente.
+- Al hacer clic en una entrada del historial se rellenan la cédula y el protocolo en el formulario principal; el usuario decide si vuelve a presionar "Consultar". El diálogo también permite limpiar el historial.
+- No se agregó ninguna dependencia externa ni se modificaron `ServicioConsulta`, `ClienteTCP`/`ClienteHTTP` ni los DTO; `PruebaJson` y `PruebaServicioConsulta` se volvieron a ejecutar sin cambios y siguen pasando.
+
+## Rediseño visual del cliente (Etapa 2)
+
+- Se rediseñó por completo la apariencia de `VentanaPrincipal`, sin cambiar su arquitectura ni su comportamiento funcional: sigue delegando toda consulta en `ServicioConsulta` y no conoce detalles de red ni de JSON.
+- Nuevas clases en `cliente.presentacion`: `Tema` (paleta de colores institucional, tipografía y espaciados centralizados), `BotonEstilizado` (botones pintados con `Graphics2D`, variantes primario/secundario/texto), `TarjetaPanel` (paneles tipo tarjeta con esquinas redondeadas), `PanelEstado` (banner de estado con franja de acento y barra de progreso para el estado de carga) y `CampoConMarcador` (campo de cédula con texto de ejemplo).
+- La ventana pasó de tres bloques con `TitledBorder` genérico a un encabezado con título/subtítulo, una tarjeta de búsqueda y una tarjeta de resultado agrupada en "Datos personales" y "Datos territoriales", con un estado vacío ("—") antes de la primera consulta.
+- La ventana ahora es responsiva (se puede redimensionar y el contenido se ajusta, con scroll vertical si la ventana es muy pequeña), en vez de depender de un tamaño mínimo fijo únicamente.
+- `App` cambió del Look & Feel nativo del sistema operativo al multiplataforma (Metal) como base, para que los componentes propios de estilo se vean consistentes en cualquier sistema operativo.
+- No se agregó ninguna dependencia externa ni se modificaron las capas de lógica (`ServicioConsulta`), comunicación (`ClienteTCP`/`ClienteHTTP`) ni DTO; `PruebaJson` y `PruebaServicioConsulta` se volvieron a ejecutar sin cambios y siguen pasando.
+
 ## Corrección de codificación real de distelec.txt
 
 - Se detectó en pruebas de integración con el cliente que el servidor devolvía error 500 ("No fue posible leer los archivos del padron") con la excepción `MalformedInputException: Input length = 1` al consultar ciertas cédulas.
