@@ -11,7 +11,7 @@ public final class PruebaServicioPadron {
     public static void main(String[] args) throws Exception {
         Path dir = Files.createTempDirectory("padron-prueba-");
         Path padron = dir.resolve("padron.txt"), distritos = dir.resolve("distelec.txt");
-        Files.writeString(padron, "linea,incompleta\n115550555,101001,RELLENO,20280101,00001,JUAN,PEREZ,RODRIGUEZ\n");
+        Files.writeString(padron, "linea,incompleta\n115550555,101001,20280101,00001,JUAN,PEREZ,RODRIGUEZ\n");
         Files.writeString(distritos, "101001,SAN JOSE,CENTRAL,CARMEN\n");
         ServicioPadron s = new ServicioPadron(new RepositorioPadron(padron), new RepositorioDistritos(distritos));
         verificar(s.consultar("115550555").codigo() == 200, "Consulta existente");

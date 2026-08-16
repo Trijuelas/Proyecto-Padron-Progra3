@@ -27,3 +27,7 @@ Se descartaron sugerencias de usar base de datos, XML, frameworks web, dependenc
 ## Auditoría posterior
 
 En una revisión posterior se solicitó auditar la implementación real de la Etapa 1, ejecutar las pruebas de TCP, HTTP y concurrencia, revisar la seguridad de la serialización JSON y corregir cualquier incumplimiento antes de integrar la rama. A partir de esa solicitud se sustituyeron las concatenaciones extensas del serializador por métodos estructurados, se validó el enlace del puerto TCP antes de anunciar el inicio y se ampliaron las pruebas de JSON y de puerto ocupado. No se utilizaron frameworks ni se desarrolló funcionalidad de la Etapa 2.
+
+## Corrección de formato de PADRON.txt
+
+Al comparar el código contra el archivo `PADRON.txt` real (revisado con muestras del archivo provisto), se detectó que `RepositorioPadron` asumía 8 campos por línea con un campo "RELLENO" que en realidad no existe: el archivo real trae 7 campos (`CEDULA,CODELEC,FECHACADUC,JUNTA,NOMBRE,1.APELLIDO,2.APELLIDO`). Con la validación anterior (`c.length < 8`), ninguna línea real cumplía el mínimo de columnas, por lo que toda consulta devolvía "persona no encontrada" sin ningún error visible. Se corrigieron los índices de columnas y el mínimo de longitud en `RepositorioPadron`, y se actualizaron los datos de prueba de `PruebaServicioPadron` y `PruebasIntegracionServidor` para reflejar el formato real de 7 columnas.
