@@ -32,7 +32,7 @@ public final class PruebasIntegracionServidor {
         Path directorio = Files.createTempDirectory("padron-integracion-");
         Path archivoPadron = directorio.resolve("PADRON.txt");
         Path archivoDistritos = directorio.resolve("distelec.txt");
-        Files.writeString(archivoPadron, "115550555,101001,R,20280101,00001,JUAN,PEREZ,RODRIGUEZ\n");
+        Files.writeString(archivoPadron, "115550555,101001,20280101,00001,JUAN,PEREZ,RODRIGUEZ\n");
         Files.writeString(archivoDistritos, "101001,SAN JOSE,CENTRAL,CARMEN\n");
         ServicioPadron servicio = new ServicioPadron(new RepositorioPadron(archivoPadron),
                 new RepositorioDistritos(archivoDistritos));

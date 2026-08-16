@@ -15,13 +15,13 @@ public final class RepositorioPadron {
             String linea;
             while ((linea = lector.readLine()) != null) {
                 String[] c = linea.split(",", -1);
-                // Formato: CEDULA,CODELEC,RELLENO,FECHACADUC,JUNTA,NOMBRE,1.APELLIDO,2.APELLIDO
-                if (c.length < 8) {
+                // Formato real de PADRON.txt: CEDULA,CODELEC,FECHACADUC,JUNTA,NOMBRE,1.APELLIDO,2.APELLIDO (7 campos)
+                if (c.length < 7) {
                     continue;
                 }
                 if (cedula.equals(c[0].trim())) {
-                    return Optional.of(new Persona(c[0].trim(), c[1].trim(), c[5].trim(),
-                            c[6].trim(), c[7].trim()));
+                    return Optional.of(new Persona(c[0].trim(), c[1].trim(), c[4].trim(),
+                            c[5].trim(), c[6].trim()));
                 }
             }
         }
