@@ -1,0 +1,5 @@
+# Copie este archivo como config.properties (no se versiona) y ajuste la direccion del servidor.
+servidor.host=localhost
+tcp.port=5000
+http.port=8080
+timeout.ms=8000
