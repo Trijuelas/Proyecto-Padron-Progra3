@@ -2,7 +2,9 @@
 
 ## Descripción y objetivo
 
-Servidor Java 17 para consultar una persona del padrón electoral. Lee los archivos CSV originales `PADRON.txt` y `distelec.txt`, relaciona el código electoral y devuelve exclusivamente JSON. Esta etapa implementa el servidor; no incluye el cliente gráfico de la Etapa 2, base de datos ni XML.
+Servidor Java 17 para consultar una persona del padrón electoral. Lee los archivos CSV originales `PADRON.txt` y `distelec.txt`, relaciona el código electoral y devuelve exclusivamente JSON. Esta etapa implementa el servidor, sin base de datos ni XML.
+
+> La Etapa 2 (cliente gráfico) es un proyecto independiente ubicado en [`cliente/`](cliente/README.md). Debe ejecutarse junto con este servidor; consulte su propio README para instrucciones de configuración y ejecución.
 
 ## Tecnologías y requisitos
 
