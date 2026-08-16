@@ -24,6 +24,20 @@ public final class PruebaServicioPadron {
         verificar(archivoInexistente.consultar("115550555").codigo() == 500, "Archivo inexistente");
         String jsonEspecial = JsonUtil.serializar(new PersonaDTO("115550555", "A\"B\\C\nD\tE", "PEREZ", "RODRIGUEZ", "101001", "SAN JOSE", "CENTRAL", "CARMEN"));
         verificar(jsonEspecial.contains("A\\\"B\\\\C\\nD\\tE"), "Escapado JSON de caracteres especiales");
+
+        // distelec.txt real viene en ISO-8859-1 y trae tildes/enies reales (ej. "PEÑAS BLANCAS").
+        // Se escriben los bytes explicitamente en ISO-8859-1 para simular el archivo original.
+        Path distritosConEnie = dir.resolve("distelec-enie.txt");
+        String distritoConEnie = "119034,SAN JOSE,PEREZ ZELEDON,PEÑAS BLANCAS\n";
+        Files.write(distritosConEnie, distritoConEnie.getBytes(java.nio.charset.StandardCharsets.ISO_8859_1));
+        Path padronParaEnie = dir.resolve("padron-enie.txt");
+        Files.writeString(padronParaEnie, "115550556,119034,20280101,00001,MARIA,SOLIS,VARGAS\n");
+        ServicioPadron servicioEnie = new ServicioPadron(new RepositorioPadron(padronParaEnie), new RepositorioDistritos(distritosConEnie));
+        var resultadoEnie = servicioEnie.consultar("115550556");
+        verificar(resultadoEnie.codigo() == 200, "Consulta con distrito con enie no falla");
+        PersonaDTO personaEnie = (PersonaDTO) resultadoEnie.cuerpo();
+        verificar("PEÑAS BLANCAS".equals(personaEnie.distrito()), "Distrito con enie leido en ISO-8859-1");
+
         System.out.println("Pruebas de ServicioPadron aprobadas.");
     }
     private static void verificar(boolean condicion, String caso) { if (!condicion) throw new AssertionError("Fallo: " + caso); }

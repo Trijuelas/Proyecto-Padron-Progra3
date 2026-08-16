@@ -11,7 +11,10 @@ public final class RepositorioPadron {
     private final Path archivo;
     public RepositorioPadron(Path archivo) { this.archivo = archivo; }
     public Optional<Persona> buscarPorCedula(String cedula) throws IOException {
-        try (BufferedReader lector = Files.newBufferedReader(archivo, StandardCharsets.UTF_8)) {
+        // Se lee en ISO-8859-1 (la codificacion real que usa el TSE, confirmada con distelec.txt) en
+        // vez de UTF-8. En este archivo no cambia el resultado porque los caracteres especiales ya
+        // vienen sustituidos por "?", pero se mantiene consistente con la codificacion real de origen.
+        try (BufferedReader lector = Files.newBufferedReader(archivo, StandardCharsets.ISO_8859_1)) {
             String linea;
             while ((linea = lector.readLine()) != null) {
                 String[] c = linea.split(",", -1);
