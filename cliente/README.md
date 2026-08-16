@@ -18,7 +18,11 @@ Este proyecto **no contiene ni accede** a `PADRON.txt` ni a `distelec.txt`: la �
 ```text
 cliente/src/cliente/
   presentacion/   VentanaPrincipal (Swing; valida y delega, no comunica)
+                  VentanaHistorial (dialogo con el historial de la sesion)
+                  Tema, BotonEstilizado, TarjetaPanel, PanelEstado,
+                  CampoConMarcador (sistema de diseno visual, sin dependencias externas)
   servicio/       ServicioConsulta, Protocolo, ResultadoConsulta (logica, independiente del protocolo)
+                  HistorialConsultas, EntradaHistorial (historial en memoria, sin persistencia)
   comunicacion/   ClienteTCP, ClienteHTTP (solo transporte; no conocen JSON ni DTO)
   dto/            PersonaDTO, ErrorDTO
   config/         Configuracion (direccion y puertos del servidor, configurables)
@@ -99,6 +103,14 @@ Además de las pruebas automatizadas, se verificó manualmente con el servidor r
 - Consulta HTTP correcta con la misma cédula: mismos datos mostrados.
 - Cédula inexistente: mensaje de error controlado, sin mostrar datos.
 - Servidor detenido: mensaje de error de conexión, la aplicación permanece funcional.
+
+## Diseño visual
+
+La interfaz usa una paleta de colores propia (azul institucional, tarjetas con esquinas redondeadas, banner de estado con indicador de carga) definida en `cliente.presentacion.Tema` y aplicada mediante componentes propios (`BotonEstilizado`, `TarjetaPanel`, `PanelEstado`, `CampoConMarcador`), pintados con `Graphics2D` estándar. No se usa ninguna biblioteca de estilos externa. La ventana es responsiva: se puede redimensionar y muestra una barra de desplazamiento vertical si el espacio disponible es menor al contenido.
+
+## Historial de consultas
+
+El botón "Historial" abre un diálogo con las consultas hechas durante la sesión actual (hora, cédula, protocolo y resultado). No se guarda en ningún archivo: se pierde al cerrar la aplicación. Al hacer clic en una entrada se rellenan la cédula y el protocolo en el formulario, sin volver a consultar automáticamente.
 
 ## Uso de Inteligencia Artificial
 
