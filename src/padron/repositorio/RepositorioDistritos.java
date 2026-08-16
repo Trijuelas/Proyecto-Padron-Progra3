@@ -10,7 +10,10 @@ public final class RepositorioDistritos {
     private final Path archivo;
     public RepositorioDistritos(Path archivo) { this.archivo = archivo; }
     public Optional<DistritoElectoral> buscarPorCodigo(String codigo) throws IOException {
-        try (BufferedReader lector = Files.newBufferedReader(archivo, StandardCharsets.UTF_8)) {
+        // El TSE distribuye distelec.txt en ISO-8859-1: trae tildes y enies reales (ej. "PENAS BLANCAS"
+        // con enie), a diferencia de PADRON.txt que sustituye esos caracteres por "?". Leerlo como
+        // UTF-8 falla (MalformedInputException, "Input length = 1") al llegar a la primera letra con tilde.
+        try (BufferedReader lector = Files.newBufferedReader(archivo, StandardCharsets.ISO_8859_1)) {
             String linea;
             while ((linea = lector.readLine()) != null) {
                 String[] c = linea.split(",", -1);
