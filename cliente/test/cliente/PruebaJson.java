@@ -20,15 +20,24 @@ public final class PruebaJson {
 
         Object arreglo = Json.analizar("[1, 2, 3]");
         verificar(arreglo instanceof List<?> lista && lista.size() == 3, "Arreglo JSON");
+        verificar(Json.analizar("1e2") instanceof Double numero && numero == 100.0,
+                "Numero JSON con exponente");
 
+        verificarInvalido("{cedula: 123}", "Clave sin comillas");
+        verificarInvalido("01", "Cero inicial");
+        verificarInvalido("1.", "Decimal incompleto");
+        verificarInvalido("\"linea\nreal\"", "Control sin escapar");
+
+        System.out.println("Pruebas de Json aprobadas.");
+    }
+
+    private static void verificarInvalido(String texto, String caso) {
         try {
-            Json.analizar("{cedula: 123}");
-            throw new AssertionError("Fallo: se esperaba un error de JSON invalido");
+            Json.analizar(texto);
+            throw new AssertionError("Fallo: JSON invalido aceptado: " + caso);
         } catch (Json.JsonException esperado) {
             // JSON invalido detectado correctamente.
         }
-
-        System.out.println("Pruebas de Json aprobadas.");
     }
 
     private static void verificar(boolean condicion, String caso) {

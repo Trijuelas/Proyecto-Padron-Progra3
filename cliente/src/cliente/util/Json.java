@@ -151,6 +151,9 @@ public final class Json {
                     default -> throw new JsonException("Secuencia de escape invalida: \\" + escape);
                 }
             } else {
+                if (actual < 0x20) {
+                    throw new JsonException("Caracter de control sin escapar en una cadena JSON.");
+                }
                 resultado.append(actual);
             }
         }
@@ -182,23 +185,47 @@ public final class Json {
         if (miraCaracter() == '-') {
             posicion++;
         }
-        boolean esDecimal = false;
-        while (posicion < texto.length()) {
-            char actual = texto.charAt(posicion);
-            if (Character.isDigit(actual)) {
-                posicion++;
-            } else if (actual == '.' || actual == 'e' || actual == 'E' || actual == '+' || actual == '-') {
-                esDecimal = esDecimal || actual == '.';
-                posicion++;
-            } else {
-                break;
+        if (posicion >= texto.length()) {
+            throw new JsonException("Numero JSON incompleto.");
+        }
+        if (texto.charAt(posicion) == '0') {
+            posicion++;
+            if (posicion < texto.length() && Character.isDigit(texto.charAt(posicion))) {
+                throw new JsonException("Un numero JSON no puede comenzar con cero.");
             }
+        } else {
+            leerDigitosObligatorios();
+        }
+        boolean esDecimal = false;
+        if (posicion < texto.length() && texto.charAt(posicion) == '.') {
+            esDecimal = true;
+            posicion++;
+            leerDigitosObligatorios();
+        }
+        if (posicion < texto.length() && (texto.charAt(posicion) == 'e' || texto.charAt(posicion) == 'E')) {
+            esDecimal = true;
+            posicion++;
+            if (posicion < texto.length() && (texto.charAt(posicion) == '+' || texto.charAt(posicion) == '-')) {
+                posicion++;
+            }
+            leerDigitosObligatorios();
         }
         String numero = texto.substring(inicio, posicion);
-        if (numero.isEmpty() || "-".equals(numero)) {
-            throw new JsonException("Numero JSON invalido.");
+        try {
+            return esDecimal ? Double.parseDouble(numero) : (Number) Long.parseLong(numero);
+        } catch (NumberFormatException e) {
+            throw new JsonException("Numero JSON fuera de rango o invalido.");
         }
-        return esDecimal ? Double.parseDouble(numero) : (Number) Long.parseLong(numero);
+    }
+
+    private void leerDigitosObligatorios() {
+        int inicio = posicion;
+        while (posicion < texto.length() && Character.isDigit(texto.charAt(posicion))) {
+            posicion++;
+        }
+        if (inicio == posicion) {
+            throw new JsonException("Se esperaba un digito en el numero JSON.");
+        }
     }
 
     private void saltarEspacios() {

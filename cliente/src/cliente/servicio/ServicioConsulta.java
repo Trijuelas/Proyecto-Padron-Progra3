@@ -32,6 +32,9 @@ public final class ServicioConsulta {
         if (errorValidacion != null) {
             return ResultadoConsulta.deError(400, errorValidacion);
         }
+        if (protocolo == null) {
+            return ResultadoConsulta.deError(400, "Debe seleccionar un protocolo de comunicacion.");
+        }
         try {
             String crudo = protocolo == Protocolo.TCP
                     ? clienteTcp.consultar(cedula.trim())
@@ -69,8 +72,20 @@ public final class ServicioConsulta {
             return ResultadoConsulta.deError(0, "El servidor respondio con un JSON invalido.");
         }
         if (Boolean.TRUE.equals(objeto.get("error"))) {
-            return new ResultadoConsulta(false, null,
-                    new ErrorDTO(true, numero(objeto.get("codigo")), texto(objeto.get("mensaje"))));
+            int codigo = numero(objeto.get("codigo"));
+            String mensaje = texto(objeto.get("mensaje"));
+            if (codigo <= 0 || mensaje.isBlank()) {
+                return ResultadoConsulta.deError(0, "El servidor respondio con un error JSON incompleto.");
+            }
+            return new ResultadoConsulta(false, null, new ErrorDTO(true, codigo, mensaje));
+        }
+        String[] camposRequeridos = {"cedula", "nombre", "primerApellido", "segundoApellido",
+            "codigoElectoral", "provincia", "canton", "distrito"};
+        for (String campo : camposRequeridos) {
+            if (!(objeto.get(campo) instanceof String valor) || valor.isBlank()) {
+                return ResultadoConsulta.deError(0,
+                        "El servidor respondio con datos incompletos o invalidos.");
+            }
         }
         PersonaDTO persona = new PersonaDTO(
                 texto(objeto.get("cedula")),

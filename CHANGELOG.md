@@ -1,5 +1,11 @@
 # Historial de cambios
 
+## Auditoría final de robustez de Etapa 2
+
+- Se endureció la deserialización JSON para aceptar exponentes válidos y rechazar números mal formados, ceros iniciales y caracteres de control sin escapar.
+- El cliente ahora rechaza respuestas exitosas incompletas y respuestas de error sin código o mensaje, en vez de mostrarlas como datos válidos.
+- Se añadió validación defensiva del protocolo seleccionado y pruebas de regresión para todos estos escenarios.
+
 ## Historial de consultas en el cliente (Etapa 2)
 
 - Se agregó un botón "Historial" que abre un diálogo con las consultas realizadas durante la sesión actual (hora, cédula, protocolo, éxito/error y un resumen del resultado), sin persistir nada en disco: se pierde al cerrar la aplicación.

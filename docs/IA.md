@@ -119,3 +119,17 @@ Se descartó guardar el historial en un archivo local (aunque era técnicamente 
 - Solo se registran en el historial las consultas que efectivamente se enviaron y respondieron (éxito o error del servidor); las validaciones locales que nunca llegan a contactar al servidor no generan una entrada.
 - Se agregó `CampoConMarcador.establecerTexto(...)` para poder rellenar el campo de cédula desde el historial sin confundir ese valor con el texto de ejemplo (marcador).
 - Se compiló el proyecto completo y se volvieron a ejecutar `PruebaJson` y `PruebaServicioConsulta`, que siguen pasando sin cambios; la verificación visual del nuevo diálogo se hace ejecutando el cliente real.
+
+## Auditoría final de requisitos de Etapas 1 y 2
+
+### Problema y prompt utilizado
+
+Se solicitó contrastar el servidor, el cliente y un ZIP de referencia contra ambos enunciados oficiales, corregir cualquier defecto que afectara la rúbrica y actualizar el repositorio únicamente después de verificar la solución.
+
+### Resultado utilizado y decisiones
+
+La auditoría confirmó que la estructura integrada del repositorio era más completa y limpia que el ZIP, que incluía binarios y una copia duplicada del servidor. Se conservó la implementación del repositorio y se corrigieron dos riesgos concretos: el analizador JSON no implementaba estrictamente la gramática numérica y `ServicioConsulta` aceptaba como persona válida un objeto con campos ausentes. También se agregó validación defensiva de protocolo nulo.
+
+### Cambios y verificación humana
+
+Se añadieron pruebas para exponentes válidos, números y cadenas inválidos, respuestas incompletas y ausencia de protocolo. Después se recompilaron por separado servidor y cliente con Java 17 y se ejecutaron las cuatro suites disponibles: servicio del padrón, integración TCP/HTTP y concurrencia, analizador JSON y servicio de consulta. Todas finalizaron correctamente.

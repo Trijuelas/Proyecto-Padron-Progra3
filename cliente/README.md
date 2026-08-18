@@ -93,7 +93,7 @@ java -cp build/classes cliente.PruebaJson
 java -cp build/classes cliente.PruebaServicioConsulta
 ```
 
-`PruebaJson` verifica el analizador JSON propio (cadenas, booleanos, números, `null`, escapado de caracteres especiales, arreglos y detección de JSON inválido). `PruebaServicioConsulta` levanta servidores TCP y HTTP de prueba livianos (sin depender del proyecto del servidor real) y verifica: consulta TCP correcta, consulta HTTP correcta, cédula inexistente, validación local (no se envía nada al servidor si la cédula es inválida), servidor no disponible (no lanza excepción sin controlar) y JSON inválido.
+`PruebaJson` verifica el analizador JSON propio (cadenas, booleanos, números con exponente, `null`, escapado de caracteres especiales, arreglos y rechazo estricto de JSON inválido). `PruebaServicioConsulta` levanta servidores TCP y HTTP de prueba livianos (sin depender del proyecto del servidor real) y verifica: consulta TCP correcta, consulta HTTP correcta, cédula inexistente, validación local (no se envía nada al servidor si la cédula es inválida o no hay protocolo), servidor no disponible, JSON inválido y respuestas JSON incompletas.
 
 ### Evidencia manual (Etapa 1 + Etapa 2 integrados)
 

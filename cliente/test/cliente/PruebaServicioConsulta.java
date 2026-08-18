@@ -32,6 +32,8 @@ public final class PruebaServicioConsulta {
         probarValidacionLocal();
         probarServidorNoDisponible();
         probarJsonInvalido();
+        probarJsonIncompleto();
+        probarProtocoloNulo();
         System.out.println("Pruebas de ServicioConsulta aprobadas.");
     }
 
@@ -121,6 +123,23 @@ public final class PruebaServicioConsulta {
             ResultadoConsulta resultado = servicio.consultar("115550555", Protocolo.TCP);
             verificar(!resultado.exito(), "JSON invalido se maneja como error controlado");
         }
+    }
+
+    private static void probarJsonIncompleto() throws Exception {
+        try (ServidorTcpDePrueba servidor = new ServidorTcpDePrueba(
+                "{\"cedula\":\"115550555\",\"nombre\":\"JUAN\"}")) {
+            ServicioConsulta servicio = new ServicioConsulta(
+                    new ClienteTCP("127.0.0.1", servidor.puerto(), 2000),
+                    new ClienteHTTP("127.0.0.1", 1, 2000));
+            ResultadoConsulta resultado = servicio.consultar("115550555", Protocolo.TCP);
+            verificar(!resultado.exito(), "JSON incompleto no se presenta como persona valida");
+        }
+    }
+
+    private static void probarProtocoloNulo() {
+        ServicioConsulta servicio = new ServicioConsulta(
+                new ClienteTCP("127.0.0.1", 1, 500), new ClienteHTTP("127.0.0.1", 1, 500));
+        verificar(!servicio.consultar("115550555", null).exito(), "Protocolo nulo se valida localmente");
     }
 
     private static int puertoDisponible() throws IOException {
